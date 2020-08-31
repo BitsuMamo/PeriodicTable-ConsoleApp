@@ -281,6 +281,7 @@ void searchRes(element periodicTable[][COLS], char target[]){
     bool exists = false;
     for(int r = 0; r < ROWS; ++r){
         for(int c = 0; c < COLS; ++c){
+            //TODO: Add case insensitive sarch and also symbol and name search not working
             if(target == periodicTable[r][c].symbol || target == periodicTable[r][c].name){
                 viewElement(periodicTable, r, c);
                 exists = true;
