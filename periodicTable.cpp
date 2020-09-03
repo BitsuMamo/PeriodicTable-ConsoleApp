@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string>
+#include <string.h>
 
 using namespace std;
 // Constants
@@ -28,13 +29,13 @@ struct element{
     char symbol[3];
     char name[14];
     int atomicNumber;
+    string classColor;
     string classification;
-    string colorCode;
 };
 
 void mainMenu();
 void subMenu();
-void printTable();
+void printTable(element periodicTable[][COLS]);
 void searchRes(element periodicTable[][COLS], char target[]);
 void searchRes(element periodicTable[][COLS], int atomicNumber);
 string calcElecConfig(int atomicNumber);
@@ -214,34 +215,38 @@ int main(){
         switch(choice){
             case 1:
                 // Gets periodicTable;
-                printTable();
+                printTable(periodicTable);
                 break;
             case 2:
-                subMenu();
-                cin>>subChoice;
-                switch(subChoice){
-                    case 1:
-                        char target_1[14];
-                        cout<<"Input: ";
-                        cin>>target_1;
-                        searchRes(periodicTable, target_1);
+                // For search
+                do{
+                    subMenu();
+                    cin>>subChoice;
+                    switch(subChoice){
+                        case 1:
+                            char target_1[14];
+                            cout<<"Input: ";
+                            cin>>target_1;
+                            searchRes(periodicTable, target_1);
 
-                        break;
-                    case 2:
-                        int target_2;
-                        cout<<"Input: ";
-                        cin>>target_2;
-                        searchRes(periodicTable, target_2);
-        
-                        break;
-                    default:
-                        break;
-                }
+                            break;
+                        case 2:
+                            int target_2;
+                            cout<<"Input: ";
+                            cin>>target_2;
+                            searchRes(periodicTable, target_2);
+
+                            break;
+                        default:
+                            break;
+                    }
+                }while((subChoice < 1 && subChoice > 2) || subChoice  != 0);
+
                 break;
             default:
                 break;
         }
-    }while((choice < 1 || choice > 2) & choice  != 0);
+    }while((choice < 1 && choice > 2) || choice  != 0);
 
     return 0;
 }
@@ -258,7 +263,17 @@ void mainMenu(){
 	cout << setw(1) << "|" << "Choice" << setw(5) << " |";
 }
 void subMenu(){
-
+    system("cls");
+	cout << "+----------------------------+" << endl;
+	cout << setw(1) << "|" << setw(28) << "*Search is case sensitive*" << setw(1) << "|" << endl;
+	cout << "+--+-------------------------+" << endl;
+	cout << setw(1) << "|" << setw(2) << "0." << setw(1) << "|" << setw(25) << left << "Go Back" << setw(1) << "|" << endl;
+	cout << "+--+-------------------------+" << endl;
+	cout << setw(1) << "|" << setw(2) << "1." << setw(1) << "|" << setw(25) << left << "Search By Name and Symbol" << setw(1) << "|" << endl;
+	cout << "+--+-------------------------+" << endl;
+	cout << setw(1) << "|" << setw(2) << "2." << setw(1) << "|" << setw(25) << left << "Search By Atomic Number" << setw(1) << "|" << endl;
+	cout << "+--+----+--------------------+" << endl;
+	cout << setw(1) << "|"<< "Choice" << setw(7) << " |";
 }
 
 
@@ -281,8 +296,7 @@ void searchRes(element periodicTable[][COLS], char target[]){
     bool exists = false;
     for(int r = 0; r < ROWS; ++r){
         for(int c = 0; c < COLS; ++c){
-            //TODO: Add case insensitive sarch and also symbol and name search not working
-            if(target == periodicTable[r][c].symbol || target == periodicTable[r][c].name){
+            if(strcmpi(target, periodicTable[r][c].symbol) == 0 || strcmpi(target, periodicTable[r][c].name) == 0){
                 viewElement(periodicTable, r, c);
                 exists = true;
             }
@@ -292,7 +306,7 @@ void searchRes(element periodicTable[][COLS], char target[]){
        noElement(); 
     }
 }
-
+//TODO: check on how to change intger to string
 string calcElecConfig(int atomicNumber){
     string config = "";
 	if (atomicNumber <= 2){
@@ -303,7 +317,7 @@ string calcElecConfig(int atomicNumber){
         config += atomicNumber - 2;
     }
 	else{
-        config += "2,";
+        config += "2";
 		atomicNumber = atomicNumber - 2;
 		// Creating temporary atomic number to do claculations on
 		int atmp = atomicNumber;
@@ -318,14 +332,92 @@ string calcElecConfig(int atomicNumber){
     return config;
 }
 //This is for output so can do it later
-void viewElement(element periodicTable[][COLS], int r, int c){
-    cout<<periodicTable[r][c].name<<endl;
-    cout<<periodicTable[r][c].symbol<<endl;
-    cout<<periodicTable[r][c].atomicNumber<<endl;
+void viewElement(element periodicTable[][COLS], int i, int j){
+	// Output of search result
+    system("cls");
+	cout << periodicTable[i][j].classColor;
+	cout << "+------------------------------------------------+" << endl;
+	cout << setw(1) << "|" << left << setw(18) << "Symbol " << setw(1) << "|" << right << setw(29) << periodicTable[i][j].symbol<< setw(1) << "|" << endl;
+	cout << "+------------------+-----------------------------+" << endl;
+	cout << setw(1) << "|" << left << setw(18) << "Name " << setw(1) << "|" << right << setw(29) << periodicTable[i][j].name<< setw(1) << "|" << endl;
+	cout << "+------------------+-----------------------------+" << endl;
+	cout << setw(1) << "|" << left << setw(18) << "Atomic Number " << setw(1) << "|" << right << setw(29) << periodicTable[i][j].atomicNumber<< setw(1) << "|" << endl;
+	cout << "+------------------+-----------------------------+" << endl;
+	cout << setw(1) << "|" << left << setw(18) << "Config" << setw(1) << "|" << right << setw(29) << calcElecConfig(periodicTable[i][j].atomicNumber)<< setw(1) << "|" << endl;
+    cout << "+------------------+-----------------------------+" << endl;
+	cout << setw(1) << "|" << left << setw(18) << "Classification " << setw(1) << "|" << right << setw(29) << periodicTable[i][j].classification<< setw(1) << "|" << endl;
+	cout << "+------------------+-----------------------------+" << endl;
+    system("pause");
+    cout<<RESET;
 }
 
 void noElement(){
-    cout<<"Element not found";
+	cout << "+-----------------+" << endl;
+	cout << "|"<< "No Element Found"<< "|" << endl;
+	cout << "+-----------------+" << endl;
 }
 
-void printTable(){} // Did it but need some revision maybe an overhall
+void printTable(element periodicTable[][COLS]){
+			// For loop to display the periodic table
+			system("cls");
+            // Group Number 
+			cout << setw(5) << " " << setw(5) << left << "1" << setw(5) << left << "2" << setw(5) << left << "3" << setw(5) << left << "4" << setw(5) << left << "5" << setw(5) << left << "6" << setw(5) << left << "7" << setw(5) << left << "8" << setw(5) << left << "9"
+				 << setw(5) << "10" << setw(5) << "11" << setw(5) << "12" << setw(5) << left << "13" << setw(5) << left << "14" << setw(5) << left << "15" << setw(5) << left << "16" << setw(5) << left << "17" << setw(5) << left << "18" << endl;
+			for (int i = 0; i < 9; i++)
+			{
+				// Output of period numbers
+				if (i < 7)
+				{
+					cout << setw(2) << left << i + 1;
+				}
+				else
+				{
+					// Consideration of the last two rows which are not periods
+					cout << setw(2) << left << "";
+				}
+
+				// Prints atomic number
+				for (int k = 0; k < 18; k++)
+				{
+                    if(periodicTable[i][k].atomicNumber != 0){
+                        cout <<  periodicTable[i][k].classColor << left << setw(4) << periodicTable[i][k].atomicNumber<< RESET << BOLDWHITE << "|" << RESET;
+                    }else{
+                        cout<<setw(5)<<" ";
+                    }
+				}
+				cout << endl;
+
+				// Correction of offset caused by the atomic numbers and period numbers
+				cout << setw(2) << "";
+
+				// Prints elements
+				for (int j = 0; j < 18; j++)
+				{
+					cout << periodicTable[i][j].classColor << left << setw(4) << right << periodicTable[i][j].symbol << RESET << BOLDWHITE << "|" << RESET;
+				}
+				cout << endl;
+				// Divider output between each row.
+				cout << BOLDWHITE << "------+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+" << RESET << endl;
+			}
+
+			// Key that relates to color code and classification
+			cout << setw(25) << " "
+				 << "+----------------------------------+" << endl;
+			cout << setw(23) << " " << setw(3) << "|" << ALKMETAL[0] << setw(17) << ALKMETAL[1] << RESET << "|" << ALKEARTH[0] << setw(14) << ALKEARTH[1] << RESET << setw(3) << "|" << endl;
+			cout << setw(25) << " "
+				 << "+-------------------+--------------+" << endl;
+			cout << setw(23) << " " << setw(3) << "|" << TRANSMETAL[0] << setw(17) << TRANSMETAL[1] << RESET << "|" << BASICMETAL[0] << setw(14) << BASICMETAL[1] << RESET << setw(3) << "|" << endl;
+			cout << setw(25) << " "
+				 << "+-------------------+--------------+" << endl;
+			cout << setw(23) << " " << setw(3) << "|" << METALLOID[0] << setw(17) << METALLOID[1] << RESET << "|" << NONMETAL[0] << setw(14) << NONMETAL[1] << RESET << setw(3) << "|" << endl;
+			cout << setw(25) << " "
+				 << "+-------------------+--------------+" << endl;
+			cout << setw(23) << " " << setw(3) << "|" << HALOGEN[0] << setw(17) << HALOGEN[1] << RESET << "|" << NOBGAS[0] << setw(14) << NOBGAS[1] << RESET << setw(3) << "|" << endl;
+			cout << setw(25) << " "
+				 << "+-------------------+--------------+" << endl;
+			cout << setw(23) << " " << setw(3) << "|" << LAT[0] << setw(17) << LAT[1] << RESET << "|" << ACT[0] << setw(14) << ACT[1] << RESET << setw(3) << "|" << endl;
+			cout << setw(25) << " "
+				 << "+----------------------------------+" << endl;
+
+			system("pause");
+} 
